@@ -284,3 +284,57 @@ def show_weather_bench(heatmap, src_img=None, cmap='GnBu', title=None,
         return np.concatenate(ret_img, axis=0)
     else:
         return ret_img[0]
+
+
+def show_video_lines_comparison(data1,data2, ncols, vmax=0.6, vmin=0.0, cmap='gray', norm=None, cbar=False, format='png', out_path=None, use_rgb=False):
+    """Generate images with video sequences from data1 and data2 printed as a column, including the difference."""
+    
+    fig, axes = plt.subplots(nrows=ncols, ncols=3, figsize=(9, 3.25 * ncols))  # 3 columns: data1, data2, and their difference
+    plt.subplots_adjust(wspace=0.01, hspace=0.05)  # Adjusting space between the plots
+    
+    # Ensure data shape is correct for both datasets
+    if len(data1.shape) > 3:
+        data1 = data1.swapaxes(1, 2).swapaxes(2, 3)
+    if len(data2.shape) > 3:
+        data2 = data2.swapaxes(1, 2).swapaxes(2, 3)
+
+    images = []
+    
+    # Plot each frame in a column: data1, data2, and difference
+    for t in range(ncols):
+        # Plotting for data1
+        if use_rgb:
+            im1 = axes[t, 0].imshow(cv2.cvtColor(data1[t], cv2.COLOR_BGR2RGB), cmap='gray')
+        else:
+            im1 = axes[t, 0].imshow(data1[t], cmap=cmap, norm=norm)
+        images.append(im1)
+        axes[t, 0].axis('off')
+        im1.set_clim(vmin, vmax)
+        
+        # Plotting for data2
+        if use_rgb:
+            im2 = axes[t, 1].imshow(cv2.cvtColor(data2[t], cv2.COLOR_BGR2RGB), cmap='gray')
+        else:
+            im2 = axes[t, 1].imshow(data2[t], cmap=cmap, norm=norm)
+        images.append(im2)
+        axes[t, 1].axis('off')
+        im2.set_clim(vmin, vmax)
+        
+        # Calculating and plotting the difference
+        diff = np.abs(data1[t].astype(np.float32) - data2[t].astype(np.float32))
+        im_diff = axes[t, 2].imshow(diff, cmap='hot')  # Using 'hot' colormap for the difference
+        images.append(im_diff)
+        axes[t, 2].axis('off')
+        im_diff.set_clim(vmin, vmax)
+
+    # Optional colorbar
+    if cbar and ncols > 1:
+        cbaxes = fig.add_axes([0.9, 0.15, 0.04 / ncols, 0.7])
+        cbar = fig.colorbar(im_diff, ax=axes.ravel().tolist(), shrink=0.1, cax=cbaxes)
+
+    plt.show()
+
+    # Save figure if output path is provided
+    if out_path is not None:
+        fig.savefig(out_path, format=format, pad_inches=0, bbox_inches='tight')
+    plt.close()
