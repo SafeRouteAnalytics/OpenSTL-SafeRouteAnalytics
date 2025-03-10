@@ -94,6 +94,7 @@ class Decoder(nn.Module):
             hid = self.dec[i](hid)
         Y = self.dec[-1](hid + enc1)
         Y = self.readout(Y)
+        print("Nimsara:Y = self.readout(Y)")
         return Y
 
 
