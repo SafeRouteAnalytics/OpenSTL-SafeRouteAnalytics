@@ -94,7 +94,10 @@ class Decoder(nn.Module):
             hid = self.dec[i](hid)
         Y = self.dec[-1](hid + enc1)
         Y = self.readout(Y)
-        print("Nimsara:Y = self.readout(Y)")
+        # Print the size (shape) of Y
+        print(f"Shape of Y: {Y.shape}")
+        # Optionally, print the data type of Y
+        print(f"Data type of Y: {Y.dtype}")
         return Y
 
 
