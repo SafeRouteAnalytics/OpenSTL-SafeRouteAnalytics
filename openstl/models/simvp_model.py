@@ -95,9 +95,9 @@ class Decoder(nn.Module):
         Y = self.dec[-1](hid + enc1)
         Y = self.readout(Y)
         # Print the size (shape) of Y
-        print(f"Shape of Y: {Y.shape}")
+        #print(f"Shape of Y: {Y.shape}")
         # Optionally, print the data type of Y
-        print(f"Data type of Y: {Y.dtype}")
+        #print(f"Data type of Y: {Y.dtype}")
         return Y
 
 
